@@ -26,11 +26,17 @@ router.get('/movies', async (req, res) => {
 
 router.get('/movies/:id', async (req, res) => {
   try {
-    const movies = await Movie.findById(req.params.id).populate('celebrity');
-    res.render('movies/movie-details', movies);
+    const movie = await Movie.findById(req.params.id).populate('cast');
+    res.render('movies/movie-details', movie);
   } catch (e) {
     console.log(e);
   }
+});
+
+router.get('/movies/:id/edit', async (req, res) => {
+  const movie = await Movie.findById(req.params.id);
+  const celebrity = await Celebrity.find();
+  res.render('movies/edit-movie', { movie, celebrity });
 });
 
 //POST
@@ -45,5 +51,16 @@ router.post('/movies/create', async (req, res) => {
     res.redirect('/movies/create');
   }
 });
+
+router.post('/movies/:id/delete', async (req, res) => {
+  try {
+    await Movie.findByIdAndRemove(req.params.id);
+    res.redirect('/movies');
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.post('/movies/:id/edit', (req, res) => {});
 
 module.exports = router;
